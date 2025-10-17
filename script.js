@@ -1,3 +1,21 @@
+// CONFIGURACIÓN FIREBASE - PEGA TU CÓDIGO AQUÍ
+import { initializeApp } from "https://www.gstatic.com/firebasejs/9.22.2/firebase-app.js";
+import { getFirestore, doc, getDoc, setDoc, onSnapshot } from "https://www.gstatic.com/firebasejs/9.22.2/firebase-firestore.js";
+
+const firebaseConfig = {
+  apiKey: "AIzaSyBJCVm-57WcdKTI-X4u0EVAZivdPT-19LU",
+  authDomain: "parejadedios-f95cb.firebaseapp.com",
+  projectId: "parejadedios-f95cb",
+  storageBucket: "parejadedios-f95cb.firebasestorage.app",
+  messagingSenderId: "184089417025",
+  appId: "1:184089417025:web:ddf2c6b8338a8bcba37dc0",
+  measurementId: "G-REWEQ8QK2X"
+};
+
+// Inicializar Firebase
+const app = initializeApp(firebaseConfig);
+const db = getFirestore(app);
+
 // Datos iniciales
 let datos = {
     fotos: [],
@@ -5,38 +23,125 @@ let datos = {
     metas: []
 };
 
-// Cargar datos guardados
-function cargarDatos() {
-    const guardado = localStorage.getItem('datosPareja');
-    if (guardado) {
-        datos = JSON.parse(guardado);
+// Cargar datos desde Firebase
+async function cargarDatos() {
+    try {
+        const docRef = doc(db, 'datosPareja', 'nuestrosDatos');
+        const docSnap = await getDoc(docRef);
+        
+        if (docSnap.exists()) {
+            datos = docSnap.data();
+            actualizarInterfaz();
+            mostrarNotificacion('✅ Datos sincronizados');
+            actualizarEstadoConexion('🟢 Conectado');
+        } else {
+            // Si no existe el documento, crearlo
+            await setDoc(docRef, datos);
+            mostrarNotificacion('✨ Espacio creado para ambos');
+        }
+    } catch (error) {
+        console.log('Error cargando datos:', error);
+        actualizarEstadoConexion('🔴 Error conexión');
+        // Intentar cargar backup local
+        const backup = localStorage.getItem('datosParejaBackup');
+        if (backup) {
+            datos = JSON.parse(backup);
+            actualizarInterfaz();
+        }
     }
-    actualizarInterfaz();
 }
 
-// Guardar datos
-function guardarDatos() {
-    localStorage.setItem('datosPareja', JSON.stringify(datos));
+// Guardar datos en Firebase
+async function guardarDatos() {
+    try {
+        const docRef = doc(db, 'datosPareja', 'nuestrosDatos');
+        await setDoc(docRef, datos);
+        // Guardar backup local también
+        localStorage.setItem('datosParejaBackup', JSON.stringify(datos));
+        mostrarNotificacion('💝 Guardado para ambos');
+        actualizarEstadoConexion('🟢 Conectado');
+    } catch (error) {
+        console.log('Error guardando:', error);
+        // Guardar local como respaldo
+        localStorage.setItem('datosParejaBackup', JSON.stringify(datos));
+        mostrarNotificacion('⚠️ Guardado local (sin conexión)');
+        actualizarEstadoConexion('🟡 Sin conexión');
+    }
 }
 
-// Navegación entre secciones - VERSIÓN CORREGIDA
+// Escuchar cambios en tiempo real
+function escucharCambios() {
+    const docRef = doc(db, 'datosPareja', 'nuestrosDatos');
+    
+    onSnapshot(docRef, (docSnap) => {
+        if (docSnap.exists()) {
+            const nuevosDatos = docSnap.data();
+            // Solo actualizar si hay cambios reales
+            if (JSON.stringify(datos) !== JSON.stringify(nuevosDatos)) {
+                datos = nuevosDatos;
+                actualizarInterfaz();
+                mostrarNotificacion('🔄 Tu novia actualizó los datos');
+            }
+        }
+    });
+}
+
+// Actualizar estado de conexión
+function actualizarEstadoConexion(estado) {
+    const elemento = document.getElementById('estadoConexion');
+    if (elemento) {
+        elemento.textContent = estado;
+    }
+}
+
+// Notificaciones
+function mostrarNotificacion(mensaje) {
+    // Crear notificación
+    const notificacion = document.createElement('div');
+    notificacion.style.cssText = `
+        position: fixed;
+        top: 20px;
+        right: 20px;
+        background: var(--gradiente-principal);
+        color: white;
+        padding: 15px 20px;
+        border-radius: 10px;
+        z-index: 10000;
+        box-shadow: 0 5px 15px rgba(0,0,0,0.3);
+        animation: slideInRight 0.3s ease;
+        max-width: 300px;
+    `;
+    notificacion.textContent = mensaje;
+    
+    document.body.appendChild(notificacion);
+    
+    // Remover después de 3 segundos
+    setTimeout(() => {
+        notificacion.style.animation = 'slideOutRight 0.3s ease';
+        setTimeout(() => notificacion.remove(), 300);
+    }, 3000);
+}
+
+// Navegación entre secciones
 document.addEventListener('DOMContentLoaded', function() {
     // Configurar navegación
     document.querySelectorAll('.nav-holograma').forEach(boton => {
         boton.addEventListener('click', function() {
-            // Remover activo de todos los botones
             document.querySelectorAll('.nav-holograma').forEach(btn => btn.classList.remove('active'));
             document.querySelectorAll('.seccion-holografica').forEach(sec => sec.classList.remove('active'));
             
-            // Activar botón y sección clickeada
             this.classList.add('active');
             const seccion = this.getAttribute('data-section');
             document.getElementById(seccion).classList.add('active');
         });
     });
 
-    // Cargar datos iniciales
+    // Cargar datos y escuchar cambios
     cargarDatos();
+    escucharCambios();
+    
+    // Sincronizar automáticamente cada minuto
+    setInterval(cargarDatos, 60000);
 });
 
 // Funciones para MODALES
@@ -63,7 +168,7 @@ function cerrarModal(id) {
 }
 
 // Agregar FOTO
-function agregarFoto() {
+async function agregarFoto() {
     const input = document.getElementById('inputFoto');
     const descripcion = document.getElementById('descripcionFoto').value;
     const fecha = document.getElementById('fechaFoto').value;
@@ -74,7 +179,7 @@ function agregarFoto() {
     }
     
     const reader = new FileReader();
-    reader.onload = function(e) {
+    reader.onload = async function(e) {
         const nuevaFoto = {
             id: Date.now(),
             imagen: e.target.result,
@@ -83,7 +188,7 @@ function agregarFoto() {
         };
         
         datos.fotos.push(nuevaFoto);
-        guardarDatos();
+        await guardarDatos();
         cerrarModal('modalFoto');
         actualizarGaleria();
     };
@@ -91,7 +196,7 @@ function agregarFoto() {
 }
 
 // Agregar PROMESA
-function agregarPromesa() {
+async function agregarPromesa() {
     const titulo = document.getElementById('tituloPromesa').value;
     const texto = document.getElementById('textoPromesa').value;
     const referencia = document.getElementById('referenciaPromesa').value;
@@ -112,13 +217,13 @@ function agregarPromesa() {
     };
     
     datos.promesas.push(nuevaPromesa);
-    guardarDatos();
+    await guardarDatos();
     cerrarModal('modalPromesa');
     actualizarPromesas();
 }
 
 // Agregar META
-function agregarMeta() {
+async function agregarMeta() {
     const titulo = document.getElementById('tituloMeta').value;
     const descripcion = document.getElementById('descripcionMeta').value;
     const fecha = document.getElementById('fechaMeta').value;
@@ -137,7 +242,7 @@ function agregarMeta() {
     };
     
     datos.metas.push(nuevaMeta);
-    guardarDatos();
+    await guardarDatos();
     cerrarModal('modalMeta');
     actualizarMetas();
 }
@@ -253,11 +358,11 @@ function verPromesa(id) {
     document.getElementById('modalVerPromesa').style.display = 'block';
 }
 
-function cambiarEstadoMeta(id) {
+async function cambiarEstadoMeta(id) {
     const meta = datos.metas.find(m => m.id === id);
     if (meta) {
         meta.estado = meta.estado === 'pendiente' ? 'cumplido' : 'pendiente';
-        guardarDatos();
+        await guardarDatos();
         actualizarMetas();
     }
 }
@@ -273,4 +378,30 @@ window.onclick = function(event) {
     if (event.target.classList.contains('modal-futurista')) {
         event.target.style.display = 'none';
     }
+}
+
+// Agregar estilos para notificaciones si no existen
+if (!document.querySelector('#estilos-notificaciones')) {
+    const estilos = document.createElement('style');
+    estilos.id = 'estilos-notificaciones';
+    estilos.textContent = `
+        @keyframes slideInRight {
+            from { transform: translateX(100%); opacity: 0; }
+            to { transform: translateX(0); opacity: 1; }
+        }
+        @keyframes slideOutRight {
+            from { transform: translateX(0); opacity: 1; }
+            to { transform: translateX(100%); opacity: 0; }
+        }
+        .estado-sincronizacion {
+            position: absolute;
+            top: 20px;
+            right: 20px;
+            background: rgba(255,255,255,0.1);
+            padding: 5px 10px;
+            border-radius: 10px;
+            font-size: 0.8rem;
+        }
+    `;
+    document.head.appendChild(estilos);
 }

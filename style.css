@@ -656,3 +656,41 @@ body {
         font-size: 1.5rem;
     }
 }
+/* Estado de Sincronización */
+.estado-sincronizacion {
+    position: absolute;
+    top: 20px;
+    right: 20px;
+    background: rgba(255, 255, 255, 0.1);
+    padding: 8px 15px;
+    border-radius: 15px;
+    font-size: 0.8rem;
+    border: 1px solid var(--color-borde);
+    backdrop-filter: blur(10px);
+}
+
+/* Notificaciones */
+@keyframes slideInRight {
+    from { transform: translateX(100%); opacity: 0; }
+    to { transform: translateX(0); opacity: 1; }
+}
+
+@keyframes slideOutRight {
+    from { transform: translateX(0); opacity: 1; }
+    to { transform: translateX(100%); opacity: 0; }
+}
+
+/* Responsive para el estado de conexión */
+@media (max-width: 768px) {
+    .estado-sincronizacion {
+        position: relative;
+        top: 0;
+        right: 0;
+        margin-top: 10px;
+        text-align: center;
+    }
+    
+    .header-futurista {
+        padding-bottom: 1rem;
+    }
+}
