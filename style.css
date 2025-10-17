@@ -146,6 +146,19 @@ body {
     background-clip: text;
 }
 
+/* Estado de Sincronización */
+.estado-sincronizacion {
+    position: absolute;
+    top: 20px;
+    right: 20px;
+    background: rgba(255, 255, 255, 0.1);
+    padding: 8px 15px;
+    border-radius: 15px;
+    font-size: 0.8rem;
+    border: 1px solid var(--color-borde);
+    backdrop-filter: blur(10px);
+}
+
 /* Navegación Holográfica */
 .nav-holografica {
     padding: 1rem;
@@ -403,7 +416,7 @@ body {
     opacity: 0.5;
 }
 
-/* Elementos de Promesa y Meta (mantienen estructura similar pero con estilo futurista) */
+/* Elementos de Promesa y Meta */
 .promesa-holograma, .meta-holograma {
     background: var(--color-surface);
     border: 1px solid var(--color-borde);
@@ -434,6 +447,13 @@ body {
 .promesa-holograma:hover, .meta-holograma:hover {
     transform: translateY(-3px);
     box-shadow: 0 10px 25px rgba(0, 0, 0, 0.2);
+}
+
+.promesa-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: flex-start;
+    margin-bottom: 10px;
 }
 
 .promesa-titulo {
@@ -473,6 +493,12 @@ body {
     flex-grow: 1;
 }
 
+.acciones-meta {
+    display: flex;
+    gap: 10px;
+    align-items: center;
+}
+
 .estado-holograma {
     padding: 0.5rem 1rem;
     border-radius: 20px;
@@ -509,6 +535,40 @@ body {
     color: var(--color-borde);
     font-size: 0.9rem;
     text-align: right;
+}
+
+/* Botones de Acción */
+.acciones-item {
+    display: flex;
+    gap: 8px;
+    margin-top: 10px;
+    justify-content: flex-end;
+}
+
+.btn-accion {
+    background: none;
+    border: none;
+    padding: 6px 12px;
+    border-radius: 6px;
+    cursor: pointer;
+    font-size: 0.9rem;
+    transition: all 0.3s ease;
+    opacity: 0.8;
+}
+
+.btn-accion:hover {
+    transform: scale(1.1);
+    opacity: 1;
+}
+
+.btn-accion.editar {
+    background: rgba(6, 182, 212, 0.2);
+    color: var(--color-accento);
+}
+
+.btn-accion.eliminar {
+    background: rgba(239, 68, 68, 0.2);
+    color: #ef4444;
 }
 
 /* Modales Futuristas */
@@ -613,6 +673,17 @@ body {
     text-align: center;
 }
 
+/* Notificaciones */
+@keyframes slideInRight {
+    from { transform: translateX(100%); opacity: 0; }
+    to { transform: translateX(0); opacity: 1; }
+}
+
+@keyframes slideOutRight {
+    from { transform: translateX(0); opacity: 1; }
+    to { transform: translateX(100%); opacity: 0; }
+}
+
 /* Responsive */
 @media (max-width: 768px) {
     .nav-contenedor {
@@ -655,33 +726,7 @@ body {
     .titulo-destacado {
         font-size: 1.5rem;
     }
-}
-/* Estado de Sincronización */
-.estado-sincronizacion {
-    position: absolute;
-    top: 20px;
-    right: 20px;
-    background: rgba(255, 255, 255, 0.1);
-    padding: 8px 15px;
-    border-radius: 15px;
-    font-size: 0.8rem;
-    border: 1px solid var(--color-borde);
-    backdrop-filter: blur(10px);
-}
-
-/* Notificaciones */
-@keyframes slideInRight {
-    from { transform: translateX(100%); opacity: 0; }
-    to { transform: translateX(0); opacity: 1; }
-}
-
-@keyframes slideOutRight {
-    from { transform: translateX(0); opacity: 1; }
-    to { transform: translateX(100%); opacity: 0; }
-}
-
-/* Responsive para el estado de conexión */
-@media (max-width: 768px) {
+    
     .estado-sincronizacion {
         position: relative;
         top: 0;
@@ -692,5 +737,50 @@ body {
     
     .header-futurista {
         padding-bottom: 1rem;
+    }
+    
+    .acciones-item {
+        justify-content: center;
+    }
+    
+    .promesa-header {
+        flex-direction: column;
+        gap: 10px;
+    }
+    
+    .acciones-meta {
+        flex-direction: column;
+        gap: 5px;
+    }
+    
+    .meta-header-holograma {
+        flex-direction: column;
+        gap: 15px;
+    }
+}
+
+@media (max-width: 480px) {
+    .nave-espacial {
+        padding: 1rem 0.5rem;
+    }
+    
+    .seccion-holografica {
+        padding: 1rem;
+    }
+    
+    .logo-centro {
+        width: 60px;
+        height: 60px;
+        font-size: 2rem;
+    }
+    
+    .orbita-1 {
+        width: 80px;
+        height: 80px;
+    }
+    
+    .orbita-2 {
+        width: 100px;
+        height: 100px;
     }
 }
