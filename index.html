@@ -1,0 +1,190 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Pareja para cumplir la voluntad de Dios ✨</title>
+    <link rel="stylesheet" href="style.css">
+</head>
+<body>
+    <!-- Fondo Futurista -->
+    <div class="background-futurista">
+        <div class="particulas"></div>
+        <div class="gradient-overlay"></div>
+    </div>
+
+    <!-- Header Espacial -->
+    <header class="header-futurista">
+        <div class="logo-container">
+            <div class="logo-orbita">
+                <div class="logo-centro">💒</div>
+                <div class="orbita-1"></div>
+                <div class="orbita-2"></div>
+            </div>
+            <h1 class="titulo-futurista">
+                <span class="titulo-texto">Pareja para cumplir</span>
+                <span class="titulo-destacado">la voluntad de Dios</span>
+            </h1>
+        </div>
+    </header>
+
+    <!-- Navegación Holográfica -->
+    <nav class="nav-holografica">
+        <div class="nav-contenedor">
+            <button class="nav-holograma active" data-section="historia">
+                <div class="holograma-icono">🌌</div>
+                <span class="holograma-texto">Nuestra Historia</span>
+                <div class="holograma-efecto"></div>
+            </button>
+            
+            <button class="nav-holograma" data-section="promesas">
+                <div class="holograma-icono">📜</div>
+                <span class="holograma-texto">Promesas</span>
+                <div class="holograma-efecto"></div>
+            </button>
+            
+            <button class="nav-holograma" data-section="metas">
+                <div class="holograma-icono">🎯</div>
+                <span class="holograma-texto">Metas</span>
+                <div class="holograma-efecto"></div>
+            </button>
+        </div>
+    </nav>
+
+    <!-- Contenedor Principal con Efecto de Nave Espacial -->
+    <main class="nave-espacial">
+        <div class="nave-contenedor">
+            <!-- Sección HISTORIA -->
+            <section id="historia" class="seccion-holografica active">
+                <div class="seccion-header">
+                    <h2 class="titulo-seccion">
+                        <span class="seccion-icono">🌌</span>
+                        Nuestra Historia Divina
+                    </h2>
+                    <button class="btn-futurista" onclick="abrirModalFoto()">
+                        <span class="btn-efecto"></span>
+                        + Agregar Momento
+                    </button>
+                </div>
+                <div id="galeria" class="galeria-holografica">
+                    <div class="placeholder-futurista">
+                        <div class="placeholder-icono">✨</div>
+                        <p>Tu historia comienza aquí</p>
+                        <small>Cada foto es un momento bendecido</small>
+                    </div>
+                </div>
+            </section>
+
+            <!-- Sección PROMESAS -->
+            <section id="promesas" class="seccion-holografica">
+                <div class="seccion-header">
+                    <h2 class="titulo-seccion">
+                        <span class="seccion-icono">📜</span>
+                        Promesas
+                    </h2>
+                    <button class="btn-futurista" onclick="abrirModalPromesa()">
+                        <span class="btn-efecto"></span>
+                        + Nueva Promesa
+                    </button>
+                </div>
+                <div id="lista-promesas" class="grid-holografico">
+                    <!-- Promesas se cargarán aquí -->
+                </div>
+            </section>
+
+            <!-- Sección METAS -->
+            <section id="metas" class="seccion-holografica">
+                <div class="seccion-header">
+                    <h2 class="titulo-seccion">
+                        <span class="seccion-icono">🎯</span>
+                        Metas
+                    </h2>
+                    <button class="btn-futurista" onclick="abrirModalMeta()">
+                        <span class="btn-efecto"></span>
+                        + Nueva Meta
+                    </button>
+                </div>
+                <div id="lista-metas" class="grid-holografico">
+                    <!-- Metas se cargarán aquí -->
+                </div>
+            </section>
+        </div>
+    </main>
+
+    <!-- MODALES -->
+    <div id="modalFoto" class="modal-futurista">
+        <div class="modal-contenido-futurista">
+            <span class="cerrar-futurista" onclick="cerrarModal('modalFoto')">&times;</span>
+            <h3 class="modal-titulo">📸 Capturar Momento Divino</h3>
+            <div class="campo-futurista">
+                <input type="file" id="inputFoto" accept="image/*" class="input-futurista">
+            </div>
+            <div class="campo-futurista">
+                <input type="text" id="descripcionFoto" placeholder="¿Qué hizo Dios en este momento?" class="input-futurista">
+            </div>
+            <div class="campo-futurista">
+                <input type="date" id="fechaFoto" class="input-futurista">
+            </div>
+            <button class="btn-futurista principal" onclick="agregarFoto()">
+                <span class="btn-efecto"></span>
+                Guardar Bendición
+            </button>
+        </div>
+    </div>
+
+    <!-- Modal Promesas -->
+    <div id="modalPromesa" class="modal-futurista">
+        <div class="modal-contenido-futurista">
+            <span class="cerrar-futurista" onclick="cerrarModal('modalPromesa')">&times;</span>
+            <h3 class="modal-titulo">📜 Nueva Promesa</h3>
+            <div class="campo-futurista">
+                <input type="text" id="tituloPromesa" placeholder="Tema (Amor, Fe, Esperanza)" class="input-futurista">
+            </div>
+            <div class="campo-futurista">
+                <textarea id="textoPromesa" placeholder="Versículo bíblico..." class="input-futurista textarea-futurista"></textarea>
+            </div>
+            <div class="campo-futurista">
+                <input type="text" id="referenciaPromesa" placeholder="Referencia bíblica" class="input-futurista">
+            </div>
+            <div class="campo-futurista">
+                <textarea id="reflexionPromesa" placeholder="¿Cómo aplicamos esta promesa?" class="input-futurista textarea-futurista"></textarea>
+            </div>
+            <button class="btn-futurista principal" onclick="agregarPromesa()">
+                <span class="btn-efecto"></span>
+                Guardar Promesa
+            </button>
+        </div>
+    </div>
+
+    <!-- Modal Metas -->
+    <div id="modalMeta" class="modal-futurista">
+        <div class="modal-contenido-futurista">
+            <span class="cerrar-futurista" onclick="cerrarModal('modalMeta')">&times;</span>
+            <h3 class="modal-titulo">🎯 Nueva Meta</h3>
+            <div class="campo-futurista">
+                <input type="text" id="tituloMeta" placeholder="¿Qué propósito tenemos?" class="input-futurista">
+            </div>
+            <div class="campo-futurista">
+                <textarea id="descripcionMeta" placeholder="Detalles del plan..." class="input-futurista textarea-futurista"></textarea>
+            </div>
+            <div class="campo-futurista">
+                <input type="date" id="fechaMeta" class="input-futurista">
+            </div>
+            <button class="btn-futurista principal" onclick="agregarMeta()">
+                <span class="btn-efecto"></span>
+                Establecer Meta
+            </button>
+        </div>
+    </div>
+
+    <!-- Modal Ver Promesa -->
+    <div id="modalVerPromesa" class="modal-futurista">
+        <div class="modal-contenido-futurista grande">
+            <span class="cerrar-futurista" onclick="cerrarModal('modalVerPromesa')">&times;</span>
+            <div id="contenidoPromesa" class="contenido-promesa"></div>
+        </div>
+    </div>
+
+    <script src="script.js"></script>
+</body>
+</html>

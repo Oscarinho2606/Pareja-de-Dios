@@ -1,0 +1,658 @@
+* {
+    margin: 0;
+    padding: 0;
+    box-sizing: border-box;
+}
+
+:root {
+    --color-primario: #6366f1;
+    --color-secundario: #8b5cf6;
+    --color-accento: #06b6d4;
+    --color-texto: #e2e8f0;
+    --color-fondo: #0f172a;
+    --color-surface: #1e293b;
+    --color-borde: #334155;
+    --gradiente-principal: linear-gradient(135deg, #6366f1, #8b5cf6, #06b6d4);
+    --gradiente-surface: linear-gradient(145deg, #1e293b, #0f172a);
+}
+
+body {
+    font-family: 'Segoe UI', system-ui, sans-serif;
+    background: var(--color-fondo);
+    color: var(--color-texto);
+    min-height: 100vh;
+    overflow-x: hidden;
+}
+
+/* Fondo Futurista con Partículas */
+.background-futurista {
+    position: fixed;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    z-index: -1;
+    background: var(--gradiente-principal);
+    opacity: 0.1;
+}
+
+.particulas {
+    position: absolute;
+    width: 100%;
+    height: 100%;
+    background-image: 
+        radial-gradient(circle at 20% 80%, rgba(99, 102, 241, 0.1) 2px, transparent 0),
+        radial-gradient(circle at 80% 20%, rgba(139, 92, 246, 0.1) 2px, transparent 0),
+        radial-gradient(circle at 40% 40%, rgba(6, 182, 212, 0.1) 1px, transparent 0);
+    background-size: 50px 50px, 70px 70px, 30px 30px;
+    animation: flotar 20s infinite linear;
+}
+
+@keyframes flotar {
+    0% { transform: translate(0, 0) rotate(0deg); }
+    100% { transform: translate(-50px, -50px) rotate(360deg); }
+}
+
+.gradient-overlay {
+    position: absolute;
+    width: 100%;
+    height: 100%;
+    background: radial-gradient(circle at 50% 50%, transparent 40%, var(--color-fondo) 80%);
+}
+
+/* Header Futurista */
+.header-futurista {
+    padding: 2rem 1rem;
+    text-align: center;
+    position: relative;
+}
+
+.logo-container {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 1.5rem;
+}
+
+.logo-orbita {
+    position: relative;
+    width: 100px;
+    height: 100px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+}
+
+.logo-centro {
+    font-size: 2.5rem;
+    background: var(--gradiente-principal);
+    border-radius: 50%;
+    width: 70px;
+    height: 70px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    z-index: 2;
+    animation: rotar 10s infinite linear;
+}
+
+.orbita-1, .orbita-2 {
+    position: absolute;
+    border: 2px solid var(--color-accento);
+    border-radius: 50%;
+    opacity: 0.3;
+}
+
+.orbita-1 {
+    width: 90px;
+    height: 90px;
+    animation: orbita 8s infinite linear;
+}
+
+.orbita-2 {
+    width: 110px;
+    height: 110px;
+    animation: orbita 12s infinite linear reverse;
+}
+
+@keyframes rotar {
+    from { transform: rotate(0deg); }
+    to { transform: rotate(360deg); }
+}
+
+@keyframes orbita {
+    from { transform: rotate(0deg); }
+    to { transform: rotate(360deg); }
+}
+
+.titulo-futurista {
+    display: flex;
+    flex-direction: column;
+    gap: 0.5rem;
+}
+
+.titulo-texto {
+    font-size: 1.5rem;
+    font-weight: 300;
+    opacity: 0.8;
+}
+
+.titulo-destacado {
+    font-size: 2rem;
+    font-weight: 700;
+    background: var(--gradiente-principal);
+    -webkit-background-clip: text;
+    -webkit-text-fill-color: transparent;
+    background-clip: text;
+}
+
+/* Navegación Holográfica */
+.nav-holografica {
+    padding: 1rem;
+    position: relative;
+}
+
+.nav-contenedor {
+    display: flex;
+    justify-content: center;
+    gap: 1rem;
+    flex-wrap: wrap;
+    max-width: 800px;
+    margin: 0 auto;
+}
+
+.nav-holograma {
+    position: relative;
+    background: var(--gradiente-surface);
+    border: 1px solid var(--color-borde);
+    border-radius: 15px;
+    padding: 1rem 1.5rem;
+    color: var(--color-texto);
+    cursor: pointer;
+    transition: all 0.3s ease;
+    min-width: 160px;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 0.5rem;
+    overflow: hidden;
+}
+
+.nav-holograma::before {
+    content: '';
+    position: absolute;
+    top: 0;
+    left: -100%;
+    width: 100%;
+    height: 100%;
+    background: linear-gradient(90deg, transparent, rgba(99, 102, 241, 0.2), transparent);
+    transition: left 0.5s ease;
+}
+
+.nav-holograma:hover::before {
+    left: 100%;
+}
+
+.nav-holograma.active {
+    background: var(--gradiente-principal);
+    transform: translateY(-5px);
+    box-shadow: 0 10px 30px rgba(99, 102, 241, 0.3);
+}
+
+.holograma-icono {
+    font-size: 1.5rem;
+    transition: transform 0.3s ease;
+}
+
+.nav-holograma:hover .holograma-icono {
+    transform: scale(1.2);
+}
+
+.holograma-texto {
+    font-weight: 600;
+    font-size: 0.9rem;
+}
+
+/* Nave Espacial Principal */
+.nave-espacial {
+    padding: 2rem 1rem;
+    position: relative;
+}
+
+.nave-contenedor {
+    max-width: 1200px;
+    margin: 0 auto;
+    background: var(--gradiente-surface);
+    border-radius: 20px;
+    border: 1px solid var(--color-borde);
+    box-shadow: 0 20px 40px rgba(0, 0, 0, 0.3);
+    overflow: hidden;
+    position: relative;
+}
+
+.nave-contenedor::before {
+    content: '';
+    position: absolute;
+    top: 0;
+    left: 0;
+    right: 0;
+    height: 2px;
+    background: var(--gradiente-principal);
+    animation: escanear 3s infinite;
+}
+
+@keyframes escanear {
+    0% { transform: translateX(-100%); }
+    100% { transform: translateX(100%); }
+}
+
+/* Secciones Holográficas */
+.seccion-holografica {
+    display: none;
+    padding: 2rem;
+    animation: aparecerSeccion 0.5s ease-out;
+}
+
+.seccion-holografica.active {
+    display: block;
+}
+
+@keyframes aparecerSeccion {
+    from {
+        opacity: 0;
+        transform: translateY(20px) scale(0.95);
+    }
+    to {
+        opacity: 1;
+        transform: translateY(0) scale(1);
+    }
+}
+
+.seccion-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-bottom: 2rem;
+    flex-wrap: wrap;
+    gap: 1rem;
+}
+
+.titulo-seccion {
+    display: flex;
+    align-items: center;
+    gap: 1rem;
+    font-size: 1.5rem;
+    background: var(--gradiente-principal);
+    -webkit-background-clip: text;
+    -webkit-text-fill-color: transparent;
+    background-clip: text;
+}
+
+.seccion-icono {
+    font-size: 2rem;
+}
+
+/* Botones Futuristas */
+.btn-futurista {
+    position: relative;
+    background: var(--gradiente-surface);
+    border: 1px solid var(--color-borde);
+    color: var(--color-texto);
+    padding: 0.75rem 1.5rem;
+    border-radius: 10px;
+    cursor: pointer;
+    font-weight: 600;
+    transition: all 0.3s ease;
+    overflow: hidden;
+}
+
+.btn-futurista::before {
+    content: '';
+    position: absolute;
+    top: 0;
+    left: -100%;
+    width: 100%;
+    height: 100%;
+    background: linear-gradient(90deg, transparent, rgba(99, 102, 241, 0.3), transparent);
+    transition: left 0.5s ease;
+}
+
+.btn-futurista:hover::before {
+    left: 100%;
+}
+
+.btn-futurista:hover {
+    transform: translateY(-2px);
+    box-shadow: 0 5px 15px rgba(99, 102, 241, 0.2);
+}
+
+.btn-futurista.principal {
+    background: var(--gradiente-principal);
+    border: none;
+}
+
+/* Galería Holográfica */
+.galeria-holografica {
+    display: grid;
+    grid-template-columns: repeat(auto-fill, minmax(280px, 1fr));
+    gap: 1.5rem;
+    margin-top: 1rem;
+}
+
+.foto-holograma {
+    position: relative;
+    border-radius: 15px;
+    overflow: hidden;
+    background: var(--color-surface);
+    border: 1px solid var(--color-borde);
+    transition: all 0.3s ease;
+    cursor: pointer;
+}
+
+.foto-holograma:hover {
+    transform: translateY(-5px) scale(1.02);
+    box-shadow: 0 15px 30px rgba(99, 102, 241, 0.2);
+}
+
+.foto-holograma img {
+    width: 100%;
+    height: 200px;
+    object-fit: cover;
+    display: block;
+}
+
+.foto-info-holograma {
+    padding: 1rem;
+    background: var(--color-surface);
+}
+
+.foto-descripcion {
+    font-weight: 600;
+    margin-bottom: 0.5rem;
+    color: var(--color-texto);
+}
+
+.foto-fecha {
+    color: var(--color-accento);
+    font-size: 0.8rem;
+}
+
+/* Grid Holográfico */
+.grid-holografico {
+    display: grid;
+    grid-template-columns: repeat(auto-fill, minmax(320px, 1fr));
+    gap: 1.5rem;
+    margin-top: 1rem;
+}
+
+/* Placeholder Futurista */
+.placeholder-futurista {
+    grid-column: 1 / -1;
+    text-align: center;
+    padding: 4rem 2rem;
+    background: var(--color-surface);
+    border: 2px dashed var(--color-borde);
+    border-radius: 15px;
+    color: var(--color-texto);
+    opacity: 0.7;
+}
+
+.placeholder-icono {
+    font-size: 3rem;
+    margin-bottom: 1rem;
+    opacity: 0.5;
+}
+
+/* Elementos de Promesa y Meta (mantienen estructura similar pero con estilo futurista) */
+.promesa-holograma, .meta-holograma {
+    background: var(--color-surface);
+    border: 1px solid var(--color-borde);
+    border-radius: 15px;
+    padding: 1.5rem;
+    transition: all 0.3s ease;
+    cursor: pointer;
+    position: relative;
+    overflow: hidden;
+}
+
+.promesa-holograma::before, .meta-holograma::before {
+    content: '';
+    position: absolute;
+    top: 0;
+    left: 0;
+    width: 3px;
+    height: 100%;
+    background: var(--gradiente-principal);
+    opacity: 0;
+    transition: opacity 0.3s ease;
+}
+
+.promesa-holograma:hover::before, .meta-holograma:hover::before {
+    opacity: 1;
+}
+
+.promesa-holograma:hover, .meta-holograma:hover {
+    transform: translateY(-3px);
+    box-shadow: 0 10px 25px rgba(0, 0, 0, 0.2);
+}
+
+.promesa-titulo {
+    color: var(--color-accento);
+    font-size: 1.2rem;
+    margin-bottom: 0.5rem;
+    font-weight: 600;
+}
+
+.promesa-texto {
+    color: var(--color-texto);
+    font-style: italic;
+    margin-bottom: 1rem;
+    line-height: 1.4;
+    opacity: 0.9;
+}
+
+.promesa-referencia {
+    color: var(--color-borde);
+    font-size: 0.9rem;
+    text-align: right;
+}
+
+/* Meta Items */
+.meta-header-holograma {
+    display: flex;
+    justify-content: space-between;
+    align-items: flex-start;
+    margin-bottom: 1rem;
+    gap: 1rem;
+}
+
+.meta-titulo {
+    color: var(--color-texto);
+    font-size: 1.3rem;
+    font-weight: 600;
+    flex-grow: 1;
+}
+
+.estado-holograma {
+    padding: 0.5rem 1rem;
+    border-radius: 20px;
+    font-size: 0.8rem;
+    font-weight: 600;
+    cursor: pointer;
+    border: none;
+    transition: all 0.3s ease;
+    min-width: 120px;
+}
+
+.estado-pendiente {
+    background: linear-gradient(135deg, #f59e0b, #d97706);
+    color: white;
+}
+
+.estado-cumplido {
+    background: linear-gradient(135deg, #10b981, #059669);
+    color: white;
+}
+
+.estado-holograma:hover {
+    transform: scale(1.05);
+}
+
+.meta-descripcion {
+    color: var(--color-texto);
+    margin-bottom: 1rem;
+    line-height: 1.5;
+    opacity: 0.8;
+}
+
+.meta-fecha {
+    color: var(--color-borde);
+    font-size: 0.9rem;
+    text-align: right;
+}
+
+/* Modales Futuristas */
+.modal-futurista {
+    display: none;
+    position: fixed;
+    z-index: 1000;
+    left: 0;
+    top: 0;
+    width: 100%;
+    height: 100%;
+    background-color: rgba(15, 23, 42, 0.8);
+    backdrop-filter: blur(10px);
+    animation: fadeInModal 0.3s ease;
+}
+
+@keyframes fadeInModal {
+    from { opacity: 0; }
+    to { opacity: 1; }
+}
+
+.modal-contenido-futurista {
+    background: var(--gradiente-surface);
+    margin: 5% auto;
+    padding: 2rem;
+    border-radius: 20px;
+    border: 1px solid var(--color-borde);
+    width: 90%;
+    max-width: 500px;
+    position: relative;
+    animation: slideInModal 0.3s ease;
+    box-shadow: 0 25px 50px rgba(0, 0, 0, 0.5);
+}
+
+.modal-contenido-futurista.grande {
+    max-width: 600px;
+}
+
+@keyframes slideInModal {
+    from { transform: translateY(-50px) scale(0.9); opacity: 0; }
+    to { transform: translateY(0) scale(1); opacity: 1; }
+}
+
+.cerrar-futurista {
+    position: absolute;
+    right: 1.5rem;
+    top: 1.5rem;
+    font-size: 1.5rem;
+    font-weight: bold;
+    cursor: pointer;
+    color: var(--color-borde);
+    transition: color 0.3s ease;
+}
+
+.cerrar-futurista:hover {
+    color: var(--color-accento);
+}
+
+.modal-titulo {
+    color: var(--color-accento);
+    margin-bottom: 1.5rem;
+    text-align: center;
+    font-size: 1.3rem;
+}
+
+/* Campos de Formulario Futuristas */
+.campo-futurista {
+    margin-bottom: 1.5rem;
+}
+
+.input-futurista {
+    width: 100%;
+    padding: 1rem;
+    background: var(--color-fondo);
+    border: 1px solid var(--color-borde);
+    border-radius: 10px;
+    color: var(--color-texto);
+    font-size: 1rem;
+    transition: all 0.3s ease;
+}
+
+.input-futurista:focus {
+    outline: none;
+    border-color: var(--color-primario);
+    box-shadow: 0 0 0 2px rgba(99, 102, 241, 0.2);
+}
+
+.textarea-futurista {
+    min-height: 100px;
+    resize: vertical;
+    font-family: inherit;
+}
+
+/* Contenido de Promesa */
+.contenido-promesa {
+    color: var(--color-texto);
+}
+
+.contenido-promesa h3 {
+    color: var(--color-accento);
+    margin-bottom: 1rem;
+    text-align: center;
+}
+
+/* Responsive */
+@media (max-width: 768px) {
+    .nav-contenedor {
+        flex-direction: column;
+        align-items: center;
+    }
+    
+    .nav-holograma {
+        width: 100%;
+        max-width: 300px;
+    }
+    
+    .seccion-header {
+        flex-direction: column;
+        text-align: center;
+    }
+    
+    .galeria-holografica, .grid-holografico {
+        grid-template-columns: 1fr;
+    }
+    
+    .modal-contenido-futurista {
+        margin: 10% auto;
+        width: 95%;
+        padding: 1.5rem;
+    }
+    
+    .titulo-seccion {
+        font-size: 1.2rem;
+    }
+    
+    .titulo-futurista {
+        text-align: center;
+    }
+    
+    .titulo-texto {
+        font-size: 1.2rem;
+    }
+    
+    .titulo-destacado {
+        font-size: 1.5rem;
+    }
+}
