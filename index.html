@@ -68,7 +68,7 @@
                     </h2>
                     <button class="btn-futurista" onclick="abrirModalFoto()">
                         <span class="btn-efecto"></span>
-                        + Agregar Momento
+                        + Agregar Momentos
                     </button>
                 </div>
                 <div id="galeria" class="galeria-holografica">
@@ -116,24 +116,38 @@
         </div>
     </main>
 
-    <!-- MODALES -->
+    <!-- MODAL para agregar FOTOS MÚLTIPLES -->
     <div id="modalFoto" class="modal-futurista">
         <div class="modal-contenido-futurista">
-            <span class="cerrar-futurista" onclick="cerrarModal('modalFoto')">&times;</span>
-            <h3 class="modal-titulo">📸 Capturar Momento Divino</h3>
+            <span class="cerrar-futurista" onclick="cerrarModalFoto()">&times;</span>
+            <h3 class="modal-titulo">📸 Capturar Momentos Divinos</h3>
+            
             <div class="campo-futurista">
-                <input type="file" id="inputFoto" accept="image/*" class="input-futurista">
+                <label class="label-futurista">Selecciona una o varias fotos:</label>
+                <input type="file" id="inputFoto" accept="image/*" multiple class="input-futurista">
+                <small class="texto-ayuda">Puedes seleccionar múltiples fotos a la vez (Ctrl+Click)</small>
             </div>
+            
             <div class="campo-futurista">
                 <input type="text" id="descripcionFoto" placeholder="¿Qué hizo Dios en este momento?" class="input-futurista">
             </div>
+            
             <div class="campo-futurista">
                 <input type="date" id="fechaFoto" class="input-futurista">
             </div>
-            <button class="btn-futurista principal" onclick="agregarFoto()">
-                <span class="btn-efecto"></span>
-                Guardar Bendición
-            </button>
+            
+            <div class="botones-multiples">
+                <button class="btn-futurista secundario" onclick="limpiarFotos()">
+                    🗑️ Limpiar Selección
+                </button>
+                <button class="btn-futurista principal" onclick="agregarFotos()">
+                    📁 Guardar Fotos
+                </button>
+            </div>
+            
+            <div id="previewFotos" class="preview-container">
+                <!-- Aquí se mostrarán las previsualizaciones -->
+            </div>
         </div>
     </div>
 
@@ -189,7 +203,5 @@
             <div id="contenidoPromesa" class="contenido-promesa"></div>
         </div>
     </div>
-
-    <!-- Firebase no necesita script adicional aquí porque ya está en script.js -->
 </body>
 </html>

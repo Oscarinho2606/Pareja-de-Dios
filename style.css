@@ -784,3 +784,67 @@ body {
         height: 100px;
     }
 }
+/* Estilos para múltiples fotos */
+.preview-container {
+    margin-top: 1rem;
+    max-height: 200px;
+    overflow-y: auto;
+}
+
+.preview-titulo {
+    color: var(--color-accento);
+    font-weight: 600;
+    margin-bottom: 0.5rem;
+    font-size: 0.9rem;
+}
+
+.preview-item {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    padding: 8px;
+    background: var(--color-surface);
+    border-radius: 8px;
+    margin-bottom: 5px;
+}
+
+.preview-item img {
+    width: 40px;
+    height: 40px;
+    object-fit: cover;
+    border-radius: 5px;
+}
+
+.preview-item span {
+    color: var(--color-texto);
+    font-size: 0.8rem;
+}
+
+.botones-multiples {
+    display: flex;
+    gap: 10px;
+    margin-top: 1rem;
+}
+
+.botones-multiples .btn-futurista {
+    flex: 1;
+}
+
+.btn-futurista.secundario {
+    background: var(--color-surface);
+    border: 1px solid var(--color-borde);
+}
+
+.texto-ayuda {
+    color: var(--color-borde);
+    font-size: 0.8rem;
+    margin-top: 5px;
+    display: block;
+}
+
+.label-futurista {
+    color: var(--color-texto);
+    font-weight: 600;
+    margin-bottom: 8px;
+    display: block;
+}

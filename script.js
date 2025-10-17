@@ -1,4 +1,4 @@
-// CONFIGURACIÓN FIREBASE - PEGA TU CÓDIGO AQUÍ
+// CONFIGURACIÓN FIREBASE
 import { initializeApp } from "https://www.gstatic.com/firebasejs/9.22.2/firebase-app.js";
 import { getFirestore, doc, getDoc, setDoc, onSnapshot } from "https://www.gstatic.com/firebasejs/9.22.2/firebase-firestore.js";
 
@@ -12,48 +12,127 @@ const firebaseConfig = {
   measurementId: "G-REWEQ8QK2X"
 };
 
-// Inicializar Firebase
-const app = initializeApp(firebaseConfig);
-const db = getFirestore(app);
-
-// Datos iniciales
+// Variables globales
+let app, db;
 let datos = {
     fotos: [],
     promesas: [],
     metas: []
 };
 
+// Inicializar Firebase con manejo de errores
+try {
+    app = initializeApp(firebaseConfig);
+    db = getFirestore(app);
+    console.log('✅ Firebase inicializado correctamente');
+} catch (error) {
+    console.error('❌ Error inicializando Firebase:', error);
+    mostrarNotificacion('⚠️ Error de conexión - Usando almacenamiento local');
+}
+
+// Actualizar estado de conexión
+function actualizarEstadoConexion(estado) {
+    const elemento = document.getElementById('estadoConexion');
+    if (elemento) {
+        elemento.textContent = estado;
+        
+        if (estado.includes('Conectado') || estado.includes('🟢')) {
+            elemento.style.color = '#10b981';
+        } else if (estado.includes('Sin conexión') || estado.includes('🟡')) {
+            elemento.style.color = '#f59e0b';
+        } else if (estado.includes('Error') || estado.includes('🔴')) {
+            elemento.style.color = '#ef4444';
+        } else {
+            elemento.style.color = '#06b6d4';
+        }
+    }
+}
+
 // HACER FUNCIONES GLOBALES
 window.abrirModalFoto = function() {
     document.getElementById('modalFoto').style.display = 'block';
     document.getElementById('fechaFoto').valueAsDate = new Date();
-    // Limpiar modo edición
     delete window.fotoEditando;
 };
 
 window.abrirModalPromesa = function() {
     document.getElementById('modalPromesa').style.display = 'block';
-    // Limpiar modo edición
     delete window.promesaEditando;
 };
 
 window.abrirModalMeta = function() {
     document.getElementById('modalMeta').style.display = 'block';
     document.getElementById('fechaMeta').valueAsDate = new Date();
-    // Limpiar modo edición
     delete window.metaEditando;
 };
 
 window.cerrarModal = function(id) {
     document.getElementById(id).style.display = 'none';
-    // Limpiar campos
     document.querySelectorAll(`#${id} input, #${id} textarea`).forEach(campo => {
         campo.value = '';
     });
-    // Limpiar modos edición
     delete window.fotoEditando;
     delete window.promesaEditando;
     delete window.metaEditando;
+};
+
+// Función especial para cerrar modal de fotos
+window.cerrarModalFoto = function() {
+    document.getElementById('modalFoto').style.display = 'none';
+    document.getElementById('descripcionFoto').value = '';
+    document.getElementById('fechaFoto').value = '';
+    document.getElementById('inputFoto').value = '';
+    document.getElementById('previewFotos').innerHTML = '';
+    delete window.fotoEditando;
+};
+
+// LIMPIAR SELECCIÓN DE FOTOS
+window.limpiarFotos = function() {
+    document.getElementById('inputFoto').value = '';
+    document.getElementById('previewFotos').innerHTML = '';
+    mostrarNotificacion('🗑️ Selección de fotos limpiada');
+};
+
+// AGREGAR MÚLTIPLES FOTOS
+window.agregarFotos = async function() {
+    const input = document.getElementById('inputFoto');
+    const descripcion = document.getElementById('descripcionFoto').value;
+    const fecha = document.getElementById('fechaFoto').value;
+    
+    if (!input.files.length) {
+        alert('Por favor, selecciona al menos una foto');
+        return;
+    }
+    
+    if (!descripcion) {
+        alert('Por favor, escribe una descripción para estas fotos');
+        return;
+    }
+    
+    const fotosPromesas = Array.from(input.files).map((file, index) => {
+        return new Promise((resolve) => {
+            const reader = new FileReader();
+            reader.onload = function(e) {
+                const nuevaFoto = {
+                    id: Date.now() + index,
+                    imagen: e.target.result,
+                    descripcion: input.files.length > 1 ? 
+                        `${descripcion} (${index + 1}/${input.files.length})` : 
+                        descripcion,
+                    fecha: fecha || new Date().toISOString().split('T')[0]
+                };
+                resolve(nuevaFoto);
+            };
+            reader.readAsDataURL(file);
+        });
+    });
+    
+    const nuevasFotos = await Promise.all(fotosPromesas);
+    datos.fotos.push(...nuevasFotos);
+    await guardarDatos();
+    cerrarModalFoto();
+    actualizarGaleria();
+    mostrarNotificacion(`📸 ${nuevasFotos.length} foto(s) guardada(s)`);
 };
 
 // FUNCIÓN PARA EDITAR FOTO
@@ -62,7 +141,7 @@ window.editarFoto = function(id) {
     if (!foto) return;
     
     window.fotoEditando = id;
-    document.getElementById('descripcionFoto').value = foto.descripcion;
+    document.getElementById('descripcionFoto').value = foto.descripcion.replace(/ \(\d+\/\d+\)$/, '');
     document.getElementById('fechaFoto').value = foto.fecha;
     document.getElementById('modalFoto').style.display = 'block';
 };
@@ -122,62 +201,6 @@ window.eliminarMeta = async function(id) {
     }
 };
 
-// AGREGAR FOTO (CREAR O EDITAR)
-window.agregarFoto = async function() {
-    const input = document.getElementById('inputFoto');
-    const descripcion = document.getElementById('descripcionFoto').value;
-    const fecha = document.getElementById('fechaFoto').value;
-    
-    if (window.fotoEditando) {
-        // MODO EDICIÓN
-        const foto = datos.fotos.find(f => f.id === window.fotoEditando);
-        if (foto) {
-            foto.descripcion = descripcion;
-            foto.fecha = fecha;
-            // Si hay nueva imagen, procesarla
-            if (input.files[0]) {
-                const reader = new FileReader();
-                reader.onload = async function(e) {
-                    foto.imagen = e.target.result;
-                    await guardarDatos();
-                    cerrarModal('modalFoto');
-                    actualizarGaleria();
-                    mostrarNotificacion('📸 Foto actualizada');
-                };
-                reader.readAsDataURL(input.files[0]);
-            } else {
-                await guardarDatos();
-                cerrarModal('modalFoto');
-                actualizarGaleria();
-                mostrarNotificacion('📸 Foto actualizada');
-            }
-        }
-    } else {
-        // MODO CREACIÓN
-        if (!input.files[0] || !descripcion) {
-            alert('Por favor, selecciona una foto y escribe una descripción');
-            return;
-        }
-        
-        const reader = new FileReader();
-        reader.onload = async function(e) {
-            const nuevaFoto = {
-                id: Date.now(),
-                imagen: e.target.result,
-                descripcion: descripcion,
-                fecha: fecha || new Date().toISOString().split('T')[0]
-            };
-            
-            datos.fotos.push(nuevaFoto);
-            await guardarDatos();
-            cerrarModal('modalFoto');
-            actualizarGaleria();
-            mostrarNotificacion('📸 Foto guardada');
-        };
-        reader.readAsDataURL(input.files[0]);
-    }
-};
-
 // AGREGAR PROMESA (CREAR O EDITAR)
 window.agregarPromesa = async function() {
     const titulo = document.getElementById('tituloPromesa').value;
@@ -191,7 +214,6 @@ window.agregarPromesa = async function() {
     }
     
     if (window.promesaEditando) {
-        // MODO EDICIÓN
         const promesa = datos.promesas.find(p => p.id === window.promesaEditando);
         if (promesa) {
             promesa.titulo = titulo;
@@ -204,7 +226,6 @@ window.agregarPromesa = async function() {
             mostrarNotificacion('📜 Promesa actualizada');
         }
     } else {
-        // MODO CREACIÓN
         const nuevaPromesa = {
             id: Date.now(),
             titulo: titulo,
@@ -234,7 +255,6 @@ window.agregarMeta = async function() {
     }
     
     if (window.metaEditando) {
-        // MODO EDICIÓN
         const meta = datos.metas.find(m => m.id === window.metaEditando);
         if (meta) {
             meta.titulo = titulo;
@@ -246,7 +266,6 @@ window.agregarMeta = async function() {
             mostrarNotificacion('🎯 Meta actualizada');
         }
     } else {
-        // MODO CREACIÓN
         const nuevaMeta = {
             id: Date.now(),
             titulo: titulo,
@@ -266,6 +285,10 @@ window.agregarMeta = async function() {
 // Cargar datos desde Firebase
 async function cargarDatos() {
     try {
+        if (!db) {
+            throw new Error('Firebase no inicializado');
+        }
+        
         const docRef = doc(db, 'datosPareja', 'nuestrosDatos');
         const docSnap = await getDoc(docRef);
         
@@ -275,18 +298,19 @@ async function cargarDatos() {
             mostrarNotificacion('✅ Datos sincronizados');
             actualizarEstadoConexion('🟢 Conectado');
         } else {
-            // Si no existe el documento, crearlo
             await setDoc(docRef, datos);
             mostrarNotificacion('✨ Espacio creado para ambos');
+            actualizarEstadoConexion('🟢 Conectado');
         }
     } catch (error) {
         console.log('Error cargando datos:', error);
-        actualizarEstadoConexion('🔴 Error conexión');
-        // Intentar cargar backup local
+        actualizarEstadoConexion('🔴 Sin Firebase');
+        
         const backup = localStorage.getItem('datosParejaBackup');
         if (backup) {
             datos = JSON.parse(backup);
             actualizarInterfaz();
+            mostrarNotificacion('📱 Usando datos locales');
         }
     }
 }
@@ -294,29 +318,34 @@ async function cargarDatos() {
 // Guardar datos en Firebase
 async function guardarDatos() {
     try {
-        const docRef = doc(db, 'datosPareja', 'nuestrosDatos');
-        await setDoc(docRef, datos);
-        // Guardar backup local también
         localStorage.setItem('datosParejaBackup', JSON.stringify(datos));
-        mostrarNotificacion('💝 Guardado para ambos');
-        actualizarEstadoConexion('🟢 Conectado');
+        
+        if (db) {
+            const docRef = doc(db, 'datosPareja', 'nuestrosDatos');
+            await setDoc(docRef, datos);
+            mostrarNotificacion('💝 Guardado para ambos');
+            actualizarEstadoConexion('🟢 Conectado');
+        } else {
+            mostrarNotificacion('💾 Guardado local');
+            actualizarEstadoConexion('🟡 Solo local');
+        }
     } catch (error) {
         console.log('Error guardando:', error);
-        // Guardar local como respaldo
         localStorage.setItem('datosParejaBackup', JSON.stringify(datos));
-        mostrarNotificacion('⚠️ Guardado local (sin conexión)');
-        actualizarEstadoConexion('🟡 Sin conexión');
+        mostrarNotificacion('💾 Guardado local (sin conexión)');
+        actualizarEstadoConexion('🟡 Solo local');
     }
 }
 
 // Escuchar cambios en tiempo real
 function escucharCambios() {
+    if (!db) return;
+    
     const docRef = doc(db, 'datosPareja', 'nuestrosDatos');
     
     onSnapshot(docRef, (docSnap) => {
         if (docSnap.exists()) {
             const nuevosDatos = docSnap.data();
-            // Solo actualizar si hay cambios reales
             if (JSON.stringify(datos) !== JSON.stringify(nuevosDatos)) {
                 datos = nuevosDatos;
                 actualizarInterfaz();
@@ -324,14 +353,6 @@ function escucharCambios() {
             }
         }
     });
-}
-
-// Actualizar estado de conexión
-function actualizarEstadoConexion(estado) {
-    const elemento = document.getElementById('estadoConexion');
-    if (elemento) {
-        elemento.textContent = estado;
-    }
 }
 
 // Notificaciones
@@ -360,8 +381,38 @@ function mostrarNotificacion(mensaje) {
     }, 3000);
 }
 
-// Navegación entre secciones
+// PREVISUALIZACIÓN DE FOTOS
 document.addEventListener('DOMContentLoaded', function() {
+    const inputFoto = document.getElementById('inputFoto');
+    if (inputFoto) {
+        inputFoto.addEventListener('change', function(e) {
+            const previewContainer = document.getElementById('previewFotos');
+            previewContainer.innerHTML = '';
+            
+            if (this.files.length > 0) {
+                const previewTitle = document.createElement('div');
+                previewTitle.className = 'preview-titulo';
+                previewTitle.textContent = `📷 ${this.files.length} foto(s) seleccionada(s):`;
+                previewContainer.appendChild(previewTitle);
+                
+                Array.from(this.files).forEach((file, index) => {
+                    const reader = new FileReader();
+                    reader.onload = function(e) {
+                        const previewItem = document.createElement('div');
+                        previewItem.className = 'preview-item';
+                        previewItem.innerHTML = `
+                            <img src="${e.target.result}" alt="Preview ${index + 1}">
+                            <span>Foto ${index + 1}</span>
+                        `;
+                        previewContainer.appendChild(previewItem);
+                    };
+                    reader.readAsDataURL(file);
+                });
+            }
+        });
+    }
+
+    // Navegación entre secciones
     document.querySelectorAll('.nav-holograma').forEach(boton => {
         boton.addEventListener('click', function() {
             document.querySelectorAll('.nav-holograma').forEach(btn => btn.classList.remove('active'));
@@ -401,9 +452,11 @@ function actualizarGaleria() {
         return;
     }
     
-    galeria.innerHTML = datos.fotos.map(foto => `
+    const fotosOrdenadas = [...datos.fotos].sort((a, b) => new Date(b.fecha) - new Date(a.fecha));
+    
+    galeria.innerHTML = fotosOrdenadas.map(foto => `
         <div class="foto-holograma">
-            <img src="${foto.imagen}" alt="${foto.descripcion}">
+            <img src="${foto.imagen}" alt="${foto.descripcion}" loading="lazy">
             <div class="foto-info-holograma">
                 <div class="foto-descripcion">${foto.descripcion}</div>
                 <div class="foto-fecha">${formatearFecha(foto.fecha)}</div>
@@ -546,67 +599,13 @@ if (!document.querySelector('#estilos-acciones')) {
     const estilos = document.createElement('style');
     estilos.id = 'estilos-acciones';
     estilos.textContent = `
-        .acciones-item {
-            display: flex;
-            gap: 8px;
-            margin-top: 10px;
-        }
-        
-        .btn-accion {
-            background: none;
-            border: none;
-            padding: 5px 10px;
-            border-radius: 5px;
-            cursor: pointer;
-            font-size: 0.9rem;
-            transition: all 0.3s ease;
-        }
-        
-        .btn-accion.editar {
-            background: rgba(6, 182, 212, 0.2);
-            color: var(--color-accento);
-        }
-        
-        .btn-accion.eliminar {
-            background: rgba(239, 68, 68, 0.2);
-            color: #ef4444;
-        }
-        
-        .btn-accion:hover {
-            transform: scale(1.1);
-        }
-        
-        .promesa-header {
-            display: flex;
-            justify-content: space-between;
-            align-items: flex-start;
-            margin-bottom: 10px;
-        }
-        
-        .acciones-meta {
-            display: flex;
-            gap: 10px;
-            align-items: center;
-        }
-        
         @keyframes slideInRight {
             from { transform: translateX(100%); opacity: 0; }
             to { transform: translateX(0); opacity: 1; }
         }
-        
         @keyframes slideOutRight {
             from { transform: translateX(0); opacity: 1; }
             to { transform: translateX(100%); opacity: 0; }
-        }
-        
-        .estado-sincronizacion {
-            position: absolute;
-            top: 20px;
-            right: 20px;
-            background: rgba(255,255,255,0.1);
-            padding: 5px 10px;
-            border-radius: 10px;
-            font-size: 0.8rem;
         }
     `;
     document.head.appendChild(estilos);
